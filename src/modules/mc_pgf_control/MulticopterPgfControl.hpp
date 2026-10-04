@@ -80,6 +80,7 @@
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/vehicle_control_mode.h>
 #include <uORB/topics/vehicle_local_position.h>
+#include <uORB/topics/vehicle_thrust_setpoint.h>
 
 using namespace time_literals;
 
@@ -128,6 +129,10 @@ private:
 
 	uORB::Publication<actuator_motors_s> _actuator_motors_pub{ORB_ID(actuator_motors)};
 	uORB::Publication<pgf_status_s> _pgf_status_pub{ORB_ID(pgf_status)};
+	// With direct-actuator offboard the rate controller and allocator are idle,
+	// so nothing else publishes the collective thrust. The land detector reads
+	// a missing/stale value as low thrust and declares a landing mid-air.
+	uORB::Publication<vehicle_thrust_setpoint_s> _vehicle_thrust_setpoint_pub{ORB_ID(vehicle_thrust_setpoint)};
 
 	pgf::Flow _flow{};
 

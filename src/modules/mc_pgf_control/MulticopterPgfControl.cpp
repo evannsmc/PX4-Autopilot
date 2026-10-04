@@ -227,12 +227,29 @@ void MulticopterPgfControl::publishActuators(const InputVector &u)
 	msg.timestamp_sample = _gyro_timestamp_sample;
 	msg.reversible_flags = 0;
 
+	float collective = 0.f;
+
 	for (int i = 0; i < actuator_motors_s::NUM_CONTROLS; i++) {
 		msg.control[i] = (i < NU) ? thrustToNormalized(u(i), _thrust_a, _thrust_b, _thrust_c) : NAN;
+
+		if (i < NU) {
+			collective += msg.control[i] / NU;
+		}
 	}
 
 	msg.timestamp = hrt_absolute_time();
 	_actuator_motors_pub.publish(msg);
+
+	// Only reached while engaged, when mc_rate_control is not publishing this.
+	// The mean motor command is the normalized collective thrust the land
+	// detector and hover thrust estimator expect (FRD, so negative z).
+	vehicle_thrust_setpoint_s thrust_sp{};
+	thrust_sp.timestamp_sample = _gyro_timestamp_sample;
+	thrust_sp.xyz[0] = 0.f;
+	thrust_sp.xyz[1] = 0.f;
+	thrust_sp.xyz[2] = -collective;
+	thrust_sp.timestamp = msg.timestamp;
+	_vehicle_thrust_setpoint_pub.publish(thrust_sp);
 }
 
 void MulticopterPgfControl::publishStatus(const InputVector &u, const FlowDiagnostics &diag,

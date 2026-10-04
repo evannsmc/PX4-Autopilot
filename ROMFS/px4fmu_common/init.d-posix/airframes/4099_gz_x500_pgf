@@ -71,11 +71,3 @@ param set-default NAV_DLL_ACT 0
 # the control allocator is idle, so the ESC health check reports a failure and
 # blocks arming.
 param set-default COM_ARM_CHK_ESCS 0
-
-# HAZARD, and not simulation-only: with direct-actuator offboard the control
-# allocator is idle, so nothing publishes vehicle_thrust_setpoint. The multicopter
-# land detector reads that as "low thrust", and a steady hover supplies the low
-# velocity and no-rotation conditions, so it declares a landing in mid-air --
-# observed here disarming the vehicle at 3 m. Disable auto-disarm for the test.
-# On the real vehicle this needs a proper answer before flying PGF.
-param set-default COM_DISARM_LAND 0
