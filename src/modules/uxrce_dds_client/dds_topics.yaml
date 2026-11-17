@@ -108,6 +108,19 @@ publications:
     type: px4_msgs::msg::GimbalDeviceAttitudeStatus
     rate_limit: 20.
 
+  # --- latent-lirra additions (TV-GPR vertical axis needs thrust; RC + battery for hardware) ---
+  - topic: /fmu/out/actuator_motors
+    type: px4_msgs::msg::ActuatorMotors
+    rate_limit: 100.
+
+  - topic: /fmu/out/vehicle_thrust_setpoint
+    type: px4_msgs::msg::VehicleThrustSetpoint
+    rate_limit: 100.
+
+  - topic: /fmu/out/rc_channels
+    type: px4_msgs::msg::RcChannels
+    rate_limit: 20.
+
 # Create uORB::Publication
 subscriptions:
   - topic: /fmu/in/register_ext_component_request
